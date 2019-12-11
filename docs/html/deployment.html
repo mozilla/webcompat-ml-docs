@@ -1,0 +1,211 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>Deployment &#8212; Webcompat ML  documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="author" title="About these documents" href="about.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Models" href="models.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="deployment">
+<h1>Deployment<a class="headerlink" href="#deployment" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="architecture-diagram">
+<h2>Architecture diagram<a class="headerlink" href="#architecture-diagram" title="Permalink to this headline">¶</a></h2>
+<img alt="_images/webcompat-ml-deploy.png" src="_images/webcompat-ml-deploy.png" />
+</div>
+<div class="section" id="technology-stack">
+<h2>Technology stack<a class="headerlink" href="#technology-stack" title="Permalink to this headline">¶</a></h2>
+<p>Current deployment is using the following technologies</p>
+<ul class="simple">
+<li><p>Docker</p>
+<ul>
+<li><p>Package models and dependencies in a single container</p></li>
+<li><p>Distribute docker images in <a class="reference external" href="https://hub.docker.com/r/mozillawebcompat/ml-task/tags">Docker Hub</a></p></li>
+</ul>
+</li>
+<li><p>AWS</p>
+<ul>
+<li><p>AWS Lambda</p>
+<ul>
+<li><p>Handle GitHub web hooks</p></li>
+</ul>
+</li>
+<li><p>AWS API Gateway</p>
+<ul>
+<li><p>Expose lambda handler as API</p></li>
+</ul>
+</li>
+<li><p>AWS Batch</p>
+<ul>
+<li><p>Schedule <code class="docutils literal notranslate"><span class="pre">webcompat-ml</span></code> tasks</p></li>
+</ul>
+</li>
+<li><p>AWS S3</p>
+<ul>
+<li><p>Store <code class="docutils literal notranslate"><span class="pre">webcompat-ml</span></code> tasks results</p></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>GitHub API / webhooks</p>
+<ul>
+<li><p>Extract data to build datasets</p></li>
+<li><p>Consume webhook events to trigger the automation</p></li>
+</ul>
+</li>
+</ul>
+<p>Even though most of the services are deployed in the cloud, all the primitives can be self hosted.
+The idea is that a webhook from GitHub triggers the automation and a simple HTTP API handles the request and spawns a task.</p>
+<img alt="_images/webcompat-ml-deploy-generic.png" src="_images/webcompat-ml-deploy-generic.png" />
+</div>
+<div class="section" id="infrastructure-as-code">
+<h2>Infrastructure as Code<a class="headerlink" href="#infrastructure-as-code" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="dependencies">
+<h3>Dependencies<a class="headerlink" href="#dependencies" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p><a class="reference external" href="https://www.terraform.io/">terraform</a></p></li>
+<li><p><a class="reference external" href="https://docs.docker.com/install/">docker</a></p></li>
+<li><p><a class="reference external" href="https://github.com/AGWA/git-crypt">git-crypt</a></p></li>
+</ul>
+</div>
+<div class="section" id="about">
+<h3>About<a class="headerlink" href="#about" title="Permalink to this headline">¶</a></h3>
+<p>All the infrastructure is managed as code and the codebase lives under
+<a class="reference external" href="https://github.com/johngian/webcompat-ml-deploy">mozilla/webcompat-ml-deploy</a>.</p>
+<p>To avoid over-complicating things, terraform is maintained in the git repository encrypted
+using <a class="reference external" href="https://github.com/AGWA/git-crypt">git-crypt</a>.</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>For each change maintainers should make sure that the state is also checked in the repository.
+The state also leaks credentials so its important to always make sure that the state is encrypted before pushing.</p>
+</div>
+<p>All ML tasks should be described as a <code class="docutils literal notranslate"><span class="pre">Dockerfile</span></code> under <code class="docutils literal notranslate"><span class="pre">docker/</span></code> and should have the ML model prebundled.</p>
+</div>
+<div class="section" id="examples">
+<h3>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h3>
+<p>Releasing a new task image</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ cd docker/needsdiagnosis
+$ docker build . -t ml-task:needsdiagnosis --build-arg MODEL_PATH=&lt;path_to_model&gt;
+$ docker tag ml-task:needsdiagnosis mozillawebcompat/ml-task:needsdiagnosis
+$ docker push mozillawebcompat/ml-task:needsdiagnosis
+</pre></div>
+</div>
+<p>Applying a terraform change</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ git-crypt unlock
+$ terraform plan  # to see what happens to the resources
+$ terraform apply
+$ git add .
+$ git commit -m &#39;&lt;change applied&gt;&#39;
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">Webcompat ML</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="about.html">About</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="datasets.html">Datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="models.html">Models</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Deployment</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#architecture-diagram">Architecture diagram</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#technology-stack">Technology stack</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#infrastructure-as-code">Infrastructure as Code</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#dependencies">Dependencies</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#about">About</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#examples">Examples</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="models.html" title="previous chapter">Models</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Mozilla.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/deployment.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
