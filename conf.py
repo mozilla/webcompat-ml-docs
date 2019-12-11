@@ -1,6 +1,6 @@
 # Project configuration
 project = 'Webcompat ML'
-copyright = '2019, John Giannelos'
+copyright = '2019, Mozilla'
 author = 'John Giannelos'
 
 extensions = [ 'sphinxcontrib.spelling' ]
