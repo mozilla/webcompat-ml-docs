@@ -3,8 +3,6 @@ project = 'Webcompat ML'
 copyright = '2019, Mozilla'
 author = 'John Giannelos'
 
-extensions = [ 'sphinxcontrib.spelling' ]
-
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
 
