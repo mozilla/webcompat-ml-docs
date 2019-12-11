@@ -14,6 +14,7 @@ Welcome to Webcompat ML's documentation!
    repositories.rst
    installation.rst
    datasets.rst
+   metrics.rst
    models.rst
    deployment.rst
 
