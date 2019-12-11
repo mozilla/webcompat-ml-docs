@@ -1,6 +1,6 @@
-************
-Definitions
-************
+********************
+Metrics definitions
+********************
 
 - ``Accuracy`` is the number of correct predictions made as a ratio of all predictions made.
 - ``Precision`` is the number of correct positive results divided by the number of positive results predicted by the classifier.
