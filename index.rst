@@ -11,6 +11,7 @@ Welcome to Webcompat ML's documentation!
 .. toctree::
 
    about.rst
+   repositories.rst
    installation.rst
    datasets.rst
    models.rst
