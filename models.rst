@@ -8,7 +8,7 @@ Models
 Given a set of webcompat issues, this model classifies if an untriaged issues needs to be diagnosed.
 
 Metrics
--------
+--------
 
 Report
 ^^^^^^^^
