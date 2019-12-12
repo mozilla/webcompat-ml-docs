@@ -50,14 +50,14 @@ Infrastructure as Code
 =======================
 
 Dependencies
-^^^^^^^^^^^^
+^^^^^^^^^^^^^
 
 - `terraform <https://www.terraform.io/>`_
 - `docker <https://docs.docker.com/install/>`_
 - `git-crypt <https://github.com/AGWA/git-crypt>`_
 
 About
-^^^^^
+^^^^^^
 
 All the infrastructure is managed as code and the codebase lives under
 `mozilla/webcompat-ml-deploy <https://github.com/johngian/webcompat-ml-deploy>`_.
@@ -74,7 +74,7 @@ using `git-crypt <https://github.com/AGWA/git-crypt>`_.
 All ML tasks should be described as a ``Dockerfile`` under ``docker/`` and should have the ML model prebundled.
 
 Examples
-^^^^^^^^
+^^^^^^^^^
 
 Releasing a new task image
 
