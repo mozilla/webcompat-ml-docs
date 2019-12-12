@@ -78,7 +78,7 @@ Examples
 
 Releasing a new task image
 
-.. code-block::
+.. code-block:: console
 
    $ cd docker/needsdiagnosis
    $ docker build . -t ml-task:needsdiagnosis --build-arg MODEL_PATH=<path_to_model>
@@ -88,11 +88,10 @@ Releasing a new task image
 
 Applying a terraform change
 
-.. code-block::
+.. code-block:: console
 
    $ git-crypt unlock
    $ terraform plan  # to see what happens to the resources
    $ terraform apply
    $ git add .
    $ git commit -m '<change applied>'
-
