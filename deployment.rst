@@ -85,6 +85,7 @@ Releasing a new task image
    $ docker tag ml-task:needsdiagnosis mozillawebcompat/ml-task:needsdiagnosis
    $ docker push mozillawebcompat/ml-task:needsdiagnosis
 
+
 Applying a terraform change
 
 .. code-block::
