@@ -15,3 +15,7 @@ All of our current codebase is hosted on github in the following repositories
 - Documentation
 
   - `mozilla/webcompat-ml-docs <https://github.com/mozilla/webcompat-ml-docs>`_
+
+- Search
+
+  - `mozilla/webcompat-search <https://github.com/mozilla/webcompat-search>`_

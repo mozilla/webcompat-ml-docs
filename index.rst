@@ -13,6 +13,7 @@ Welcome to Webcompat ML's documentation!
    about.rst
    repositories.rst
    installation.rst
+   elasticsearch.rst
    datasets.rst
    metrics.rst
    models.rst

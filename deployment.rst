@@ -55,6 +55,7 @@ Dependencies
 - `terraform <https://www.terraform.io/>`_
 - `docker <https://docs.docker.com/install/>`_
 - `git-crypt <https://github.com/AGWA/git-crypt>`_
+- `webcompat-ml <https://github.com/mozilla/webcompat-ml>`_
 
 About
 ^^^^^^
@@ -74,24 +75,40 @@ using `git-crypt <https://github.com/AGWA/git-crypt>`_.
 All ML tasks should be described as a ``Dockerfile`` under ``docker/`` and should have the ML model prebundled.
 
 Examples
-^^^^^^^^^
+=========
 
-Releasing a new task image
+Regular maintenance tasks
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Build the ``needsdiagnosis`` model dataset
 
 .. code-block:: console
 
-   $ cd docker/needsdiagnosis
-   $ docker build . -t ml-task:needsdiagnosis --build-arg MODEL_PATH=<path_to_model>
+   $ webcompat-ml-needsdiagnosis build-dataset --es-url "<URL>" --es-index-name="<INDEX>" --es-doc-type="<TYPE>" --output "</path/to/dataset.csv>"
+
+Train the ``needsdiagnosis`` model
+
+.. code-block:: console
+
+   $ webcompat-ml-needsdiagnosis train --data "</path/to/dataset.csv>" --output "</path/to/model.bin>"
+
+Releasing a new ``needsdiagnosis`` task image
+
+.. code-block:: console
+
+   $ cd webcompat-ml-deploy/docker/needsdiagnosis
+   $ docker build . -t ml-task:needsdiagnosis --build-arg MODEL_PATH="</path/to/model.bin>"
    $ docker tag ml-task:needsdiagnosis mozillawebcompat/ml-task:needsdiagnosis
    $ docker push mozillawebcompat/ml-task:needsdiagnosis
-
 
 Applying a terraform change
 
 .. code-block:: console
 
    $ git-crypt unlock
-   $ terraform plan  # to see what happens to the resources
+   $ terraform plan
    $ terraform apply
    $ git add .
+   $ git add terraform.tfstate
+   $ git add terraform.tfstate.backup
    $ git commit -m '<change applied>'
