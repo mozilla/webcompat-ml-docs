@@ -9,4 +9,6 @@ Installation
 
    $ git clone https://github.com/mozilla/webcompat-ml
    $ cd webcompat-ml
+   $ python -m venv env
+   $ . env/bin/activate
    $ pip install .
